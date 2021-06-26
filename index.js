@@ -2,7 +2,7 @@ const express = require('express')
 const app = express()
 const cors = require('cors');
 const { MongoClient } = require('mongodb');
-
+const ObjectId = require('mongodb').ObjectId;
 
 require('dotenv').config()
 const port = process.env.PORT || 5000;
@@ -51,9 +51,35 @@ client.connect(err => {
       })
   })
 
+  // admin check
+  app.post('/isAdmin', (req, res) => {
+    const email = req.body.email;
+    adminCollection.find({ email: email })
+      .toArray((err, admins) => {
+        console.log("admin check",admins)
+      res.send(admins.length > 0)
+    })
+  })
+
+// get blogs
+app.get('/blogs', (req, res) => {
+  blogsCollection.find({})
+  .toArray((err, items) => {
+    res.send(items)
+  })
+})
+
+  // single blog
 
 
+  app.get('/blogDetails/:id',(req,res)=>{
+    blogsCollection.find({ _id:ObjectId(req.params.id) })
+      .toArray((err, documents) => {
+        res.send(documents[0])
+        console.log(err, documents)
+  })
 
+   })
 
 
 
